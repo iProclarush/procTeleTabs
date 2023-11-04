@@ -48,13 +48,8 @@ local lastWithdrawAmount = 0
 
 local function SelectTeleTab()
     local locationToChosenValue = {
-        Varrock = 25,
-        Lumbridge = 29,
-        Camelot = 37,
-        Ardougne = 41,
-        Watchtower = 45,
-        Falador = 33,
-        House = 49,
+        Varrock = 25, Lumbridge = 29, Camelot = 37,
+        Ardougne = 41, Watchtower = 45, Falador = 33, House = 49,
     }
 
     local chosenValue = locationToChosenValue[teleTabList.string_value]
@@ -174,7 +169,7 @@ local function HandleButlerWithdrawal(butler)
     if vbState == 12 then
         API.KeyPress_("\27")
         API.RandomSleep2(500, 800, 800)
-    elseif vbState == 0 then
+    elseif vbState == 0 and API.InventoryInterfaceCheckvarbit() == false then
         API.KeyboardPress32(0x42, 0)
         API.RandomSleep2(500, 800, 800)
     end
