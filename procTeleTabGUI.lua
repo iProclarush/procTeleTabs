@@ -1,4 +1,4 @@
-local procGUI = {}
+local procTeleTabGUI = {}
 local API = require("api")
 
 local scriptStartingTime = os.time()
@@ -8,7 +8,7 @@ local skillStartingXP = API.GetSkillXP(skillBeingTrained)
 local teleTabIDs = {8007, 8001, 8012, 8013, 8008, 8009, 31665, 8010}
 local startingCount = 0
 
-function procGUI.Init()
+function procTeleTabGUI.Init()
 
     backgroundPanel = API.CreateIG_answer();
     backgroundPanel.box_start = FFPOINT.new(10, 100, 0)
@@ -48,20 +48,20 @@ function procGUI.Init()
     totalTimeRunning.box_start = FFPOINT.new(105, 196, 0)
     totalTimeRunning.colour = ImColor.new(141, 145, 1)
     totalTimeRunning.box_name = "ttr"
-    totalTimeRunning.string_value = procGUI.Runtime()
+    totalTimeRunning.string_value = procTeleTabGUI.Runtime()
 
     for i = 1, #teleTabIDs do
         local value = teleTabIDs[i]
-        startingCount = startingCount + procGUI.CountItems(value)
+        startingCount = startingCount + procTeleTabGUI.CountItems(value)
     end
 end
 
-function procGUI.Draw()
+function procTeleTabGUI.Draw()
     API.DrawSquareFilled(backgroundPanel)
     API.DrawTextAt(titleBarText)
     API.DrawComboBox(teleTabList, false)
 
-    xpGained.string_value = "Gained " .. procGUI.CommaFormatting((API.GetSkillXP(skillBeingTrained) -skillStartingXP)) .. " XP"
+    xpGained.string_value = "Gained " .. procTeleTabGUI.CommaFormatting((API.GetSkillXP(skillBeingTrained) -skillStartingXP)) .. " XP"
     API.DrawTextAt(xpGained)
 
     local count = 0
@@ -69,20 +69,20 @@ function procGUI.Draw()
 
     for i = 1, #teleTabIDs do
         local value = teleTabIDs[i]
-        count = count + procGUI.CountItems(value)
+        count = count + procTeleTabGUI.CountItems(value)
     end
 
     itemsCrafted.string_value = "Crafted " .. (count - startingCount) .. " total items"
     API.DrawTextAt(itemsCrafted)
 
-    timeTillLevel.string_value = "TTL " .. (procGUI.CalculateTimeFrame() or "00:00:00")
+    timeTillLevel.string_value = "TTL " .. (procTeleTabGUI.CalculateTimeFrame() or "00:00:00")
     API.DrawTextAt(timeTillLevel)
 
-    totalTimeRunning.string_value = procGUI.Runtime()
+    totalTimeRunning.string_value = procTeleTabGUI.Runtime()
     API.DrawTextAt(totalTimeRunning)
 end
 
-function procGUI.Runtime()
+function procTeleTabGUI.Runtime()
     local diff = os.difftime(os.time(), scriptStartingTime)
     local hours = math.floor(diff / 3600)
     local minutes = math.floor((diff % 3600) / 60)
@@ -90,12 +90,12 @@ function procGUI.Runtime()
     return string.format("%02d:%02d:%02d", hours, minutes, seconds)
 end
 
-function procGUI.RoundNumber(value, decimalPlaces)
+function procTeleTabGUI.RoundNumber(value, decimalPlaces)
     local multiplier = 10^(decimalPlaces or 0)
     return math.floor(value * multiplier + 0.5) / multiplier
 end
 
-function procGUI.CommaFormatting(number)
+function procTeleTabGUI.CommaFormatting(number)
     local formatted = tostring(number)
     local k
     while true do  
@@ -107,12 +107,12 @@ function procGUI.CommaFormatting(number)
     return formatted
 end
 
-function procGUI.CalculateTimeFrame()
+function procTeleTabGUI.CalculateTimeFrame()
 
     local currentXp = API.GetSkillXP(skillBeingTrained)
     local elapsedMinutes = (os.time() - scriptStartingTime) / 60
     local diffXp = math.abs(currentXp - skillStartingXP);
-    local xpPH = procGUI.RoundNumber((diffXp * 60) / elapsedMinutes);
+    local xpPH = procTeleTabGUI.RoundNumber((diffXp * 60) / elapsedMinutes);
 
     local currentXp = API.GetSkillXP(skillBeingTrained)
     local xpNeededForCondition = API.XPForLevel(API.XPLevelTable(currentXp) + 1)
@@ -137,8 +137,8 @@ function procGUI.CalculateTimeFrame()
     return timeNeededStr
 end
 
-function procGUI.CountItems(itemID)
+function procTeleTabGUI.CountItems(itemID)
     return API.InvStackSize(itemID)
 end
 
-return procGUI
+return procTeleTabGUI

@@ -21,8 +21,8 @@ print(file_exists(path))
     end
 end
 
-local status, module_or_error = pcall(require_if_exists, "procGUI")
-local procGUI = {}
+local status, module_or_error = pcall(require_if_exists, "procTeleTabGUI")
+local procTeleTabGUI = {}
 local API = require("api")
 
     os.execute("cls")
@@ -30,12 +30,12 @@ local API = require("api")
     print("#    Starting Script ProcTeleTabs   #")
     print("#####################################")
 if (status) then
-    print("#  procGUI.lua Loaded Successfully  #")
+    print("#  procTeleTabGUI.lua Loaded Successfully  #")
     print("#####################################")
-    procGUI = module_or_error
-    procGUI.Init()
+    procTeleTabGUI = module_or_error
+    procTeleTabGUI.Init()
 else
-    print("#        procGUI.lua missing        #")
+    print("#        procTeleTabGUI.lua missing        #")
     print("#           No GUI Loaded           #")
     print("#####################################")
     print(module_or_error)
@@ -191,7 +191,7 @@ local function HandleButlerWithdrawal(butler)
 
             if API.Select_Option("Un-cert") then
                 API.RandomSleep2(500, 700, 850)
-                local itemCount = math.min(API.Invfreecount_(), butler.maxItems)
+                local itemCount = math.min(API.Invfreecount_() - 1, butler.maxItems)
                 if itemCount > 0 then
                     withdrawItemCount(itemCount)
                 else
@@ -244,7 +244,7 @@ while(API.Read_LoopyLoop())
 do-----------------------------------------------------------------------------------
 
     if(status) then
-        procGUI.Draw()
+        procTeleTabGUI.Draw()
     end
 
     if (API.GetGameState() == 2) then
