@@ -6,7 +6,7 @@ end
 
 function require_if_exists(file)
     local user_profile = os.getenv("USERPROFILE")
-    local directory = user_profile .. "\\Documents\\MemoryError\\Lua_Scripts\\"
+    local directory = user_profile .. "\\Documents\\MemoryError\\Lua_Scripts\\procTeleTabs\\"
     local filename = file:gsub("%.", "\\")
     local path = directory .. filename .. ".lua"
     
@@ -21,8 +21,8 @@ print(file_exists(path))
     end
 end
 
-local status, module_or_error = pcall(require_if_exists, "procTeleTabGUI")
-local procTeleTabGUI = {}
+local status, module_or_error = pcall(require_if_exists, "procGUI")
+local procGUI = {}
 local API = require("api")
 
     os.execute("cls")
@@ -30,12 +30,12 @@ local API = require("api")
     print("#    Starting Script ProcTeleTabs   #")
     print("#####################################")
 if (status) then
-    print("#  procTeleTabGUI.lua Loaded Successfully  #")
+    print("#  procGUI.lua Loaded Successfully  #")
     print("#####################################")
-    procTeleTabGUI = module_or_error
-    procTeleTabGUI.Init()
+    procGUI = module_or_error
+    procGUI.Init()
 else
-    print("#        procTeleTabGUI.lua missing        #")
+    print("#        procGUI.lua missing        #")
     print("#           No GUI Loaded           #")
     print("#####################################")
     print(module_or_error)
@@ -244,7 +244,7 @@ while(API.Read_LoopyLoop())
 do-----------------------------------------------------------------------------------
 
     if(status) then
-        procTeleTabGUI.Draw()
+        procGUI.Draw()
     end
 
     if (API.GetGameState() == 2) then
