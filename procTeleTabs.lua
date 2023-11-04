@@ -207,7 +207,6 @@ local function HandleButlerWithdrawal(butler)
     end
 end
 
-
 local function procTeleTabs()
 
     local isWorking = API.isProcessing()
@@ -242,10 +241,6 @@ local function FirstRun()
     local player = API.GetLocalPlayerName()
     API.Write_ScripCuRunning0("procTeleTabs: " .. player)
     firstRun = false;
-end
-
-local function Setup()
-
 end
 
 API.Write_LoopyLoop(true)
