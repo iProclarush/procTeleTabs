@@ -1,208 +1,276 @@
-print("################################")
-print("# Starting Script ProcTeleTabs #")
-print("################################")
-
-local API = require("api")
-local Utils = require("Utils")
-
-local startTime = os.time()
-local startXp = API.GetSkillXP("MAGIC")
-local fetching = false
-local firstLaunch = true
-local starting = 0
-
-local function WriteLog(inputLog)
-    local time = os.date('%Y-%m-%d %H:%M:%S')
-    print(time .. ": " .. inputLog)
+function file_exists(path)
+    local f = io.open(path, "r")
+    if f then f:close()end
+    return f ~= nil
 end
 
-local function RoundNumber(val, decimal)
-    if decimal then
-        return math.floor((val * 10 ^ decimal) + 0.5) / (10 ^ decimal)
-    else
-        return math.floor(val + 0.5)
-    end
-end
-
-local function FormatNumber(num)
-    if num >= 1e6 then
-        return string.format("%.1fM", num / 1e6)
-    elseif num >= 1e3 then
-        return string.format("%.1fK", num / 1e3)
-    else
-        return tostring(num)
-    end
-end
-
--- Format script elapsed time to [hh:mm:ss]
-local function FormatElapsedTime(startTime)
-    local currentTime = os.time()
-    local elapsedTime = currentTime - startTime
-    local hours = math.floor(elapsedTime / 3600)
-    local minutes = math.floor((elapsedTime % 3600) / 60)
-    local seconds = elapsedTime % 60
-    return string.format("[%02d:%02d:%02d]", hours, minutes, seconds)
-end
-
-local function ProgressBarPercentage(skill, currentExp)
-    local currentLevel = API.XPLevelTable(API.GetSkillXP(skill))
-    if currentLevel == 120 then return 100 end
-    local nextLevelExp = XPForLevel(currentLevel + 1)
-    local currentLevelExp = XPForLevel(currentLevel)
-    local progressPercentage = (currentExp - currentLevelExp) / (nextLevelExp - currentLevelExp) * 100
-    return math.floor(progressPercentage)
-end
-
-
-local function InitGUI()
-    os.execute("cls")
-
-    guiBackPlate = API.CreateIG_answer();
-    guiBackPlate.box_name = "back";
-    guiBackPlate.box_start = FFPOINT.new(0, 0, 0)
-    guiBackPlate.box_size = FFPOINT.new(530, 45, 0)
-    guiBackPlate.colour = ImColor.new(15, 13, 18, 255)
-    guiBackPlate.string_value = ""
-
-    guiListBox = API.CreateIG_answer()
-    guiListBox.box_name = "|  "
-    guiListBox.box_start = FFPOINT.new(1,4,0)
-    guiListBox.stringsArr = {"Varrock","Lumbridge","Falador" , "Camelot", "Ardougne", "Watchtower", "House"}
-     
-    progressBar = API.CreateIG_answer()
-    progressBar.box_start = FFPOINT.new(120, 4, 0)
-    progressBar.box_name = "ProgressBar"
-    progressBar.colour = ImColor.new(4, 17, 196);
-    progressBar.string_value = "Magic XP"
-
-    starting = API.InvStackSize(1762)
-    API.Write_ScripCuRunning0("procTeleTabs")
-end
-
-local function TeleTabInterfaceSelection()
-
-    if(guiListBox.string_value == "Varrock") then
-        API.DoAction_Interface(0xffffffff,0xffffffff,1,1371,22,25,API.OFF_ACT_GeneralInterface_route)
-    end
-
-    if(guiListBox.string_value == "Lumbridge") then
-        API.DoAction_Interface(0xffffffff,0xffffffff,1,1371,22,29,API.OFF_ACT_GeneralInterface_route)
-    end
-
-    if(guiListBox.string_value == "Camelot") then
-        API.DoAction_Interface(0xffffffff,0xffffffff,1,1371,22,37,API.OFF_ACT_GeneralInterface_route)
-    end
-
-    if(guiListBox.string_value == "Ardougne") then
-        API.DoAction_Interface(0xffffffff,0xffffffff,1,1371,22,41,API.OFF_ACT_GeneralInterface_route)
-    end
-
-    if(guiListBox.string_value == "Watchtower") then
-        API.DoAction_Interface(0xffffffff,0xffffffff,1,1371,22,45,API.OFF_ACT_GeneralInterface_route)
-    end
-
-    if(guiListBox.string_value == "Falador") then
-        API.DoAction_Interface(0xffffffff,0xffffffff,1,1371,22,33,API.OFF_ACT_GeneralInterface_route)
-    end
-
-    if(guiListBox.string_value == "House") then
-        API.DoAction_Interface(0xffffffff,0xffffffff,1,1371,22,49,API.OFF_ACT_GeneralInterface_route)
-    end
-
-end
-
-local function DrawGUI()
-
-    API.DrawSquareFilled(guiBackPlate)
-    API.DrawComboBox(guiListBox, false)
+function require_if_exists(file)
+    local user_profile = os.getenv("USERPROFILE")
+    local directory = user_profile .. "\\Documents\\MemoryError\\Lua_Scripts\\"
+    local filename = file:gsub("%.", "\\")
+    local path = directory .. filename .. ".lua"
     
-    local tabs = starting - API.InvStackSize(1762)
-    local skill = "MAGIC"
-    local currentXp = API.GetSkillXP(skill)
-    local elapsedMinutes = (os.time() - startTime) / 60
-    local diffXp = math.abs(currentXp - startXp);
-    local xpPH = RoundNumber((diffXp * 60) / elapsedMinutes);
-    local time = FormatElapsedTime(startTime)
-    local currentLevel = API.XPLevelTable(API.GetSkillXP(skill))
-    progressBar.radius = ProgressBarPercentage(skill, API.GetSkillXP(skill)) / 100
-    progressBar.string_value = time .. " | " .. string.lower(skill):gsub("^%l", string.upper) .. ": " .. currentLevel .. " | XP/H: " .. FormatNumber(xpPH) .. " | Crafted: " .. tabs
-    API.DrawProgressBar(progressBar)
+print(file_exists(path))
 
-    if (guiListBox.return_click) then
-        guiListBox.return_click = false
+    if file_exists(path) then
+        local path_to_add = directory .. "?.lua"
+        if not string.find(package.path, path_to_add, 1, true) then
+            package.path = package.path .. ";" .. path_to_add
+        end
+        return require(file)
     end
-
 end
 
-InitGUI()
+local status, module_or_error = pcall(require_if_exists, "procGUI")
+local procGUI = {}
+local API = require("api")
 
-local function ProcTeleTabs()
+    os.execute("cls")
+    print("#####################################")
+    print("#    Starting Script ProcTeleTabs   #")
+    print("#####################################")
+if (status) then
+    print("#  procGUI.lua Loaded Successfully  #")
+    print("#####################################")
+    procGUI = module_or_error
+    procGUI.Init()
+else
+    print("#        procGUI.lua missing        #")
+    print("#           No GUI Loaded           #")
+    print("#####################################")
+    print(module_or_error)
+end
+
+local scriptFirstRun = true
+local butlerIsWorking = false
+local lastWithdrawAmount = 0
+
+
+local function SelectTeleTab()
+    local locationToChosenValue = {
+        Varrock = 25,
+        Lumbridge = 29,
+        Camelot = 37,
+        Ardougne = 41,
+        Watchtower = 45,
+        Falador = 33,
+        House = 49,
+    }
+
+    local chosenValue = locationToChosenValue[teleTabList.string_value]
+
+    if chosenValue then
+        API.DoAction_Interface(0xffffffff,0xffffffff,1,1371,22,locationToChosenValue[teleTabList.string_value],API.OFF_ACT_GeneralInterface_route)
+        API.RandomSleep2(200, 250, 350)
+        API.DoAction_Interface(0xffffffff,0xffffffff,0,1370,30,-1,4512)
+    end
+end
+
+function FindLectern()
+    local searchIDs = {13642, 13643, 13644, 13645, 13646, 13647, 13648}
+    local allObjects = API.ReadAllObjectsArray(false, 0)
+
+    for _, object in ipairs(allObjects) do
+        if(object.Id ~= nil) then
+            for _, id in ipairs(searchIDs) do
+                if(object.Id ~= nil) then
+                    if object.Id == id then
+                        return id
+                    end
+                end
+            end
+        end
+        
+    end
+    return nil
+end
+
+local function FindButler()
+    local availableButlers = {
+        {name = "DemonButler", id = 4243, maxItems = 26},
+        {name = "Butler", id = 4241, maxItems = 20},
+        {name = "Cook", id = 4239, maxItems = 16},
+        {name = "Maid", id = 4237, maxItems = 10},
+        {name = "RoyalGuard", id = 15513, maxItems = 6},
+        {name = "Rick", id = 4235, maxItems = 6},
+    }
+
+    local allNPCs = API.ReadAllObjectsArray(false, 1)
+    local foundButler = nil
+
+    for _, npc in pairs(allNPCs) do
+        if npc.Id > 0 then
+            local distance = API.Math_DistanceF(npc.Tile_XYZ, API.PlayerCoordfloat())
+            if npc.Id ~= 0 and distance < 150 then
+                for _, butler in ipairs(availableButlers) do
+                    if npc.Id == butler.id then
+                        print("Found Butler")
+                        foundButler = {
+                            id = butler.id,
+                            maxItems = butler.maxItems,
+                            distance = distance
+                        }
+                        break
+                    end
+                end
+            end
+        end
+        if foundButler then break end
+    end
+
+    return foundButler
+end
+
+local function WaitForButler()
+    local startTime = os.time()
+    local maxWait = 10
+    local butlerIsTalking = false
+
+    local function summonButler()
+        API.DoAction_Interface(0x24,0xffffffff,1,1665,13,-1,5392)
+    end
+
+    summonButler()
+
+    repeat
+        butlerIsTalking = (API.VB_FindPSett(2874, 0).state == 12)
+
+        if not butlerIsTalking then
+            API.RandomSleep2(500, 800, 1000)
+        end
+
+        if os.difftime(os.time(), startTime) >= maxWait then
+            print("Butler didn't respond in time, calling again.")
+            summonButler()
+            startTime = os.time()
+        end
+    until butlerIsTalking
+end
+
+local function HandleButlerWithdrawal(butler)
+
+    local vbState = API.VB_FindPSett(2874, 0).state
+
+    local function withdrawItemCount(itemCount)
+        local digits = tostring(itemCount)
+        for i = 1, #digits do
+            local digit = digits:sub(i, i)
+            API.RandomSleep2(200, 500, 600)
+            API.KeyPress_(digit)
+        end
+        API.RandomSleep2(200, 500, 600)
+        API.KeyPress_("\13")
+        butlerIsWorking = true
+        lastWithdrawAmount = itemCount
+    end
+
+    local function interactWithButler()
+        API.DoAction_Inventory1(1762, 0, 2, 4432)
+        API.RandomSleep2(500, 800, 1500)
+        API.DoAction_NPC(0x24, 1408, { butler.id }, 50)
+        API.RandomSleep2(500, 800, 1500)
+    end
+
+    if vbState == 12 then
+        API.KeyPress_("\27")
+        API.RandomSleep2(500, 800, 800)
+    elseif vbState == 0 then
+        API.KeyboardPress32(0x42, 0)
+        API.RandomSleep2(500, 800, 800)
+    end
+
+    if API.InventoryInterfaceCheckvarbit() then
+        if vbState == 0 or vbState == 12 then
+            interactWithButler()
+        end
+
+        if vbState == 12 then
+            if lastWithdrawAmount > 0 and lastWithdrawAmount <= API.Invfreecount_() then
+                if API.Select_Option("Un-cert another") then
+                    butlerIsWorking = true
+                    API.RandomSleep2(1500, 2000, 3500)
+                    return
+                end
+            end
+
+            if API.Select_Option("Un-cert") then
+                API.RandomSleep2(500, 700, 850)
+                local itemCount = math.min(API.Invfreecount_(), butler.maxItems)
+                if itemCount > 0 then
+                    withdrawItemCount(itemCount)
+                else
+                    print("No free inventory slots available")
+                end
+                API.RandomSleep2(1500, 2000, 3500)
+            end
+        end
+    end
+end
+
+
+local function procTeleTabs()
 
     local isWorking = API.isProcessing()
+    local softClayCount = API.InvItemcount_1(1761)
+    local lawRuneCount = API.InvStackSize(563)
 
-    if(API.InvItemcount_1(1761) == 0 and API.InvStackSize(563) > 0 and isWorking == false and fetching == false) then
-        WriteLog("Un-certing more soft clay")
-        DrawGUI()
-        API.DoAction_Inventory1(1762, 0, 2, 4432)
-        API.RandomSleep2(1500, 2000, 3500)
-        API.DoAction_NPC(0x24,1408,{ 4243 },50)
-        API.RandomSleep2(500, 800, 1500)
-
-        if(API.Select_Option("Un-cert another")) then
-            fetching = true
-            WriteLog("Waiting for butler to return")
-            API.RandomSleep2(1500, 2000, 3500)
-        end
-
-        if(API.Select_Option("Un-cert")) then
-            API.RandomSleep2(500, 500, 500)
-            API.KeyPress_("2")
-            API.RandomSleep2(200, 500, 600)
-            API.KeyPress_("0")
-            API.RandomSleep2(200, 500, 600)
-            API.KeyPress_("\13")
-            API.RandomSleep2(200, 500, 600)
-            fetching = true
-            WriteLog("Waiting for butler to return")
-            API.RandomSleep2(1500, 2000, 3500)
+    if(isWorking == false and butlerIsWorking == false and softClayCount == 0 and lawRuneCount > 0) then
+        local butler = FindButler()
+        if(butler ~= nill) then
+            if(butler.distance > 5) then
+                print("Waiting for butler")
+                WaitForButler()
+            else
+                print("Withdrawing from butler")
+                HandleButlerWithdrawal(butler)
+            end
         end
     end
 
-    if(API.InvItemcount_1(1761) > 0 and API.InvStackSize(563) > 0 and isWorking == false) then
-        WriteLog("Crafting tele tabs")
-        DrawGUI()
-        API.RandomSleep2(800, 1200, 3500)
-        API.DoAction_Object1(0x3f,0,{ 13647 },50)
+    if(isWorking == false and softClayCount > 0 and lawRuneCount > 0) then
+        API.DoAction_Object1(0x3f,0,{ FindLectern() },50)
         API.RandomSleep2(1500, 2000, 3500)
-        TeleTabInterfaceSelection()
+        SelectTeleTab()
         API.RandomSleep2(500, 700, 1500)
         API.DoAction_Interface(0xffffffff,0xffffffff,0,1370,30,-1,4512)
-        fetching = false
         API.RandomSleep2(500, 500, 500)
+        butlerIsWorking = false
     end
 end
 
+local function FirstRun()
+    local player = API.GetLocalPlayerName()
+    API.Write_ScripCuRunning0("procTeleTabs: " .. player)
+    firstRun = false;
+end
+
+local function Setup()
+
+end
 
 API.Write_LoopyLoop(true)
 while(API.Read_LoopyLoop())
 do-----------------------------------------------------------------------------------
 
+    if(status) then
+        procGUI.Draw()
+    end
+
     if (API.GetGameState() == 2) then
         API.KeyPress_(" ")
-        API.RandomSleep2(200, 200, 200)
     end
 
     if(API.GetGameState() == 3) then
-        API.DoRandomEvents()
-        DrawGUI()
-
-        if(firstLaunch) then
-            API.RandomSleep2(5000, 6000, 7000)
-            firstLaunch = false
+        if(scriptFirstRun) then 
+            FirstRun() 
         end
 
-        ProcTeleTabs()
+        if(teleTabList.string_value == "Select Tab" or teleTabList.string_value == nil or teleTabList.string_value == "" or teleTabList.string_value == " ") then
+            print("Waiting for user to finish setup")
+        else
+            procTeleTabs()
+        end
     end
 
-API.RandomSleep2(500, 3050, 12000)
+API.RandomSleep2(500, 3050, 5000)
 end----------------------------------------------------------------------------------
