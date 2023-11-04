@@ -27,7 +27,7 @@ function procGUI.Init()
     teleTabList.stringsArr = {"Select Tab", "Varrock","Lumbridge","Falador" , "Camelot", "Ardougne", "Watchtower", "House"}
 
     xpGained = API.CreateIG_answer()
-    xpGained.box_start = FFPOINT.new(92, 130, 0)
+    xpGained.box_start = FFPOINT.new(90, 130, 0)
     xpGained.colour = ImColor.new(141, 145, 1)
     xpGained.box_name = "xpGained"
     xpGained.string_value = "Gained " .. (API.GetSkillXP(skillBeingTrained) -skillStartingXP) .. " XP"

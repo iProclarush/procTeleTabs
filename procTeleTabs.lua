@@ -182,6 +182,7 @@ local function HandleButlerWithdrawal(butler)
     if API.InventoryInterfaceCheckvarbit() then
         if vbState == 0 or vbState == 12 then
             interactWithButler()
+            API.RandomSleep2(500, 700, 850)
         end
 
         if vbState == 12 then
