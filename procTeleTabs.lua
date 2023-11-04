@@ -49,7 +49,7 @@ local lastWithdrawAmount = 0
 local function SelectTeleTab()
     local locationToChosenValue = {
         Varrock = 25, Lumbridge = 29, Camelot = 37,
-        Ardougne = 41, Watchtower = 45, Falador = 33, House = 49,
+        Ardougne = 41, Watchtower = 45, Falador = 33, House = 49, GWD = 53
     }
 
     local chosenValue = locationToChosenValue[teleTabList.string_value]

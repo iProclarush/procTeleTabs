@@ -5,7 +5,7 @@ local scriptStartingTime = os.time()
 local skillBeingTrained = "MAGIC"
 local skillStartingXP = API.GetSkillXP(skillBeingTrained)
 
-local teleTabIDs = {8007}
+local teleTabIDs = {8007, 8001, 8012, 8013, 8008, 8009, 31665, 8010}
 local startingCount = 0
 
 function procGUI.Init()
@@ -24,7 +24,7 @@ function procGUI.Init()
     teleTabList = API.CreateIG_answer()
     teleTabList.box_name = "     "
     teleTabList.box_start = FFPOINT.new(79, 205, 0)
-    teleTabList.stringsArr = {"Select Tab", "Varrock","Lumbridge","Falador" , "Camelot", "Ardougne", "Watchtower", "House"}
+    teleTabList.stringsArr = {"Select Tab", "Varrock","Lumbridge","Falador" , "Camelot", "Ardougne", "Watchtower", "House", "GWD"}
 
     xpGained = API.CreateIG_answer()
     xpGained.box_start = FFPOINT.new(90, 130, 0)
