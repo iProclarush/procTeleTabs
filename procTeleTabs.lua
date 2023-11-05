@@ -145,7 +145,11 @@ end
 local function HandleButlerWithdrawal(butler)
 
     local function withdrawItemCount(itemCount)
+        API.RandomSleep2(200, 500, 600)
+        print(API.VB_FindPSett(2874, 0).state)
         if(API.VB_FindPSett(2874, 0).state == 10) then
+            API.RandomSleep2(200, 500, 600)
+            print("withdrawing " .. itemCount)
             local digits = tostring(itemCount)
             for i = 1, #digits do
                 local digit = digits:sub(i, i)
@@ -165,7 +169,6 @@ local function HandleButlerWithdrawal(butler)
         API.RandomSleep2(500, 800, 1500)
         print("Using on Butler")
         API.DoAction_NPC(0x24, 1408, { butler.id }, 50)
-        API.RandomSleep2(750, 950, 1500)
     end
 
     if API.VB_FindPSett(2874, 0).state == 0 and API.InventoryInterfaceCheckvarbit() == false then
