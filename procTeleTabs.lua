@@ -144,44 +144,42 @@ end
 
 local function HandleButlerWithdrawal(butler)
 
-    local vbState = API.VB_FindPSett(2874, 0).state
-
     local function withdrawItemCount(itemCount)
-        local digits = tostring(itemCount)
-        for i = 1, #digits do
-            local digit = digits:sub(i, i)
+        if(API.VB_FindPSett(2874, 0).state == 10) then
+            local digits = tostring(itemCount)
+            for i = 1, #digits do
+                local digit = digits:sub(i, i)
+                API.RandomSleep2(200, 500, 600)
+                API.KeyPress_(digit)
+            end
             API.RandomSleep2(200, 500, 600)
-            API.KeyPress_(digit)
+            API.KeyPress_("\13")
         end
-        API.RandomSleep2(200, 500, 600)
-        API.KeyPress_("\13")
         butlerIsWorking = true
         lastWithdrawAmount = itemCount
     end
 
     local function interactWithButler()
+        print("Clicking soft clay")
         API.DoAction_Inventory1(1762, 0, 2, 4432)
         API.RandomSleep2(500, 800, 1500)
+        print("Using on Butler")
         API.DoAction_NPC(0x24, 1408, { butler.id }, 50)
-        API.RandomSleep2(500, 800, 1500)
+        API.RandomSleep2(750, 950, 1500)
     end
 
-    if vbState == 12 then
-        API.KeyPress_("\27")
-        API.RandomSleep2(500, 800, 800)
-    elseif vbState == 0 and API.InventoryInterfaceCheckvarbit() == false then
+    if API.VB_FindPSett(2874, 0).state == 0 and API.InventoryInterfaceCheckvarbit() == false then
+        print("API.VB_FindPSett(2874, 0).state == 0 & inventoryVisible = false - Sending B key")
         API.KeyboardPress32(0x42, 0)
         API.RandomSleep2(500, 800, 800)
     end
 
+    print(API.InventoryInterfaceCheckvarbit())
     if API.InventoryInterfaceCheckvarbit() then
-        if vbState == 0 or vbState == 12 then
-            interactWithButler()
-            API.RandomSleep2(500, 700, 850)
-        end
 
-        if vbState == 12 then
+        if API.VB_FindPSett(2874, 0).state == 12 then
             if lastWithdrawAmount > 0 and lastWithdrawAmount <= API.Invfreecount_() then
+                print("Selecting Un-cert previous amount")
                 if API.Select_Option("Un-cert another") then
                     butlerIsWorking = true
                     API.RandomSleep2(1500, 2000, 3500)
@@ -190,7 +188,7 @@ local function HandleButlerWithdrawal(butler)
             end
 
             if API.Select_Option("Un-cert") then
-                API.RandomSleep2(500, 700, 850)
+                print("Select un-cert new amount")
                 local itemCount = math.min(API.Invfreecount_() - 1, butler.maxItems)
                 if itemCount > 0 then
                     withdrawItemCount(itemCount)
@@ -199,6 +197,12 @@ local function HandleButlerWithdrawal(butler)
                 end
                 API.RandomSleep2(1500, 2000, 3500)
             end
+        end
+
+        if API.VB_FindPSett(2874, 0).state == 0 or API.VB_FindPSett(2874, 0).state == 12 then
+            print("Inventory visible and not talking or base talking - interacting with butler")
+            interactWithButler()
+            API.RandomSleep2(500, 650, 800)
         end
     end
 end

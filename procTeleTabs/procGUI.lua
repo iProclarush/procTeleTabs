@@ -5,7 +5,7 @@ local scriptStartingTime = os.time()
 local skillBeingTrained = "MAGIC"
 local skillStartingXP = API.GetSkillXP(skillBeingTrained)
 
-local teleTabIDs = {8007, 8001, 8012, 8013, 8008, 8009, 31665, 8010}
+local teleTabIDs = {8007, 8001, 8012, 8013, 8008, 8009, 31665, 8010, 8011}
 local startingCount = 0
 
 function procTeleTabGUI.Init()
