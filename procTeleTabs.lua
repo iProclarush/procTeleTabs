@@ -147,6 +147,7 @@ local function HandleButlerWithdrawal(butler)
     local function withdrawItemCount(itemCount)
         API.RandomSleep2(200, 500, 600)
         print(API.VB_FindPSett(2874, 0).state)
+        API.RandomSleep2(500, 700, 950)
         if(API.VB_FindPSett(2874, 0).state == 10) then
             API.RandomSleep2(200, 500, 600)
             print("withdrawing " .. itemCount)
@@ -215,6 +216,10 @@ local function procTeleTabs()
     local isWorking = API.isProcessing()
     local softClayCount = API.InvItemcount_1(1761)
     local lawRuneCount = API.InvStackSize(563)
+
+    if(lawRuneCount == 0) then
+        return
+    end
 
     if(isWorking == false and butlerIsWorking == false and softClayCount == 0 and lawRuneCount > 0) then
         local butler = FindButler()
